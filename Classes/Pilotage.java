@@ -1,4 +1,5 @@
 package com.example.admin.pilotage;
+
 /**
  *This class build the String AT*PCMD Command to control the drone
  *Syntax AT*PCMD=[Sequence number],[Flag bit-field],[Roll],[Pitch],[Gaz],[Yaw]
@@ -68,7 +69,7 @@ public class Pilotage {
     /**
      *This function increment the sequence number
      */
-    private void IncrementeCompteur (){ //incremente le numÃ©ro de commande et passe a 1 si on atteind 1000
+    private void IncrementeCompteur (){ //incremente le numéro de commande et passe a 1 si on atteind 1000
         if(iCompteur >= 1000){
             iCompteur = 1;
         }else{
@@ -79,7 +80,7 @@ public class Pilotage {
     /**
      *You can use this function outside the class for use the sequence number for example Config Use or other ...
      */
-    public int RecupSequenceNum (int iIncrementation){ //permet a une classe exterieur de recuperer le numÃ©ro de sequence actuel et de liberer les X prochaine sequences pour des utilisations externe
+    public int RecupSequenceNum (int iIncrementation){ //permet a une classe exterieur de recuperer le numéro de sequence actuel et de liberer les X prochaine sequences pour des utilisations externe
         int iReturn=iCompteur;
         int ibcl=0;
         for(ibcl =0; ibcl<iIncrementation;ibcl++) {
@@ -141,6 +142,12 @@ public class Pilotage {
         return strATCMD;
     }
 
+    /**
+     * This function return the String command to run annimation
+     * @param iAnimation  0: PHI_M30_DEG 1: PHI_30_DEG 2: THETA_M30_DEG 3: THETA_30_DEG 4: THETA_20_DEG_YAW_200_DEG 5: THETA_20_DEG_YAW_M200_DEG 6: TURNAROUND 7: TURNAROUND_GODOWN 8: YAW_SHAKE 9: YAW_DANCE 10: PHI_DANCE 11: THETA_DANCE 12: VZ_DANCE 13: WAVE 14: PHI_THETA_MIXED 15: DOUBLE_PHI_THETA_MIXED 16: FLIP_AHEAD 17: FLIP_BEHIND 18: FLIP_LEFT 19: FLIP_RIGHT
+     * @param iDuration 0 = infinity
+     * @return String AT*config command
+     */
     public String DroneAnimation(int iAnimation, int iDuration){
         String strAnnim;
         strAnnim ="AT*ANIM="+iCompteur+",\"control:flight_anim\","+iAnimation+","+iDuration;
@@ -427,7 +434,7 @@ public class Pilotage {
             this.fZMPilotHorX = fZMPilotHorX;
             return true;
         } catch (NumberFormatException e){
-            // On ne change pas la valeur si problÃ¨mes
+            // On ne change pas la valeur si problèmes
             return false;
         }
 
@@ -438,7 +445,7 @@ public class Pilotage {
             this.fZMPilotHorY = fZMPilotHorY;
             return true;
         } catch (NumberFormatException e) {
-            // On ne change pas la valeur si problÃ¨mes
+            // On ne change pas la valeur si problèmes
             return false;
         }
     }
@@ -448,7 +455,7 @@ public class Pilotage {
             this.fZMPilotVertRZ = fZMPilotVertRZ;
             return true;
         }catch (NumberFormatException e) {
-            // On ne change pas la valeur si problÃ¨mes
+            // On ne change pas la valeur si problèmes
             return false;
         }
     }
@@ -458,7 +465,7 @@ public class Pilotage {
             this.fZMPilotVertZ = fZMPilotVertZ;
             return true;
         }catch (NumberFormatException e) {
-            // On ne change pas la valeur si problÃ¨mes
+            // On ne change pas la valeur si problèmes
             return false;
         }
     }
