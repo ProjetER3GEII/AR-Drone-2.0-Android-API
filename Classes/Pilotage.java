@@ -1,7 +1,7 @@
 package com.example.admin.pilotage;
 /**
  *This class build the String AT*PCMD Command to control the drone
- *Syntax AT*REF=[Sequence number],[Flag bit-field],[Roll],[Pitch],[Gaz],[Yaw]
+ *Syntax AT*PCMD=[Sequence number],[Flag bit-field],[Roll],[Pitch],[Gaz],[Yaw]
  *@author Mathieu
  *@version 6.0
  */
