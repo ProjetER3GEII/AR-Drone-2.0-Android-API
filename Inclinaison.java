@@ -28,7 +28,6 @@ public class Inclinaison implements SensorEventListener {
     private  Sensor mMagnetic;
     //vector
     float[] accelerometerVector=new float[3];
-    float[] inclinaison=new float[3];
     float[] magneticVector=new float[3];
     float[] resultMatrix=new float[9];
     float[] values=new float[3];
@@ -45,9 +44,6 @@ public class Inclinaison implements SensorEventListener {
         accelerometerVector[0]=0;
         accelerometerVector[1]=0;
         accelerometerVector[2]=0;
-        inclinaison[0]=0;
-        inclinaison[1]=0;
-        inclinaison[2]=0;
     }
 
     /**
