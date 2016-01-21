@@ -16,11 +16,23 @@ The API will provide five main services:
 
 Thus this interface will allow the user to set up and pilot the drone. It will also allow him to display and record the camera stream, which can be used for further processing.
 
+## How to install
+
+1. Download and unzip "AR-Drone-2.0.zip"
+2. Open the project in Android Studio
+3. Compile the project into your smartphone
+4. Power up the drone and connect your smartphone to its WiFi hotspot
+5. You're good to go
+
+## Libraries dependencies
+
+* [Vitamio] (https://vitamio.org/) is used to display the drone's video feed in real time. 
+
 ## What's included
 You will find in this repository all the Java classes, as well as an Android project that can be used as an example.
 
 ## Authors
-
+We are [Electrical Engineering and Industrial Programming Students] (https://www.iut-acy.univ-smb.fr/) at the [University of Savoie Mont-Blanc] (https://www.univ-smb.fr/) 
 * [Jules Simon] (https://github.com/JulesSimonGEII)
 * Alexis Artigues
 * Mathieu Collomb
