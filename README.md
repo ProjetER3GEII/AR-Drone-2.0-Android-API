@@ -1,7 +1,8 @@
 # AR-Drone-2.0-Android-API
 
 ## Abstract
-The goal of this API is to allow anyone to use Parrot's AR Drone 2.0 with their Android applications.
+We are Industrial Programming students and this is the result of our project.
+The goal of this project was to code an API to allow anyone to use Parrot's AR Drone 2.0 with their Android applications.
 
 This interface will provide the user with Java routines that can be easily integrated into an Android project. Thus it must be possible with this API to write an AR Drone application without having to understand the drone’s specifications. 
 
@@ -25,4 +26,8 @@ You will find in this repository all the Java classes, as well as an Android pro
 * Mathieu Collomb
 * Antoine Crosetti
 * Jean-Christophe Chudziak
+
+## Mentor
+
+* Bernard Caron
 
