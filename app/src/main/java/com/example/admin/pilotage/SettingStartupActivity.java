@@ -117,7 +117,7 @@ public class SettingStartupActivity extends AppCompatActivity {
         final int maxAlt = 5000;
         final int minAlt = 500;
         CurrentAltitude.setText("500");
-        AltitudeSeekBar.setMax((maxAlt - minAlt) / stepAlt);
+        AltitudeSeekBar.setMax((maxAlt - (int) minAlt) / stepAlt);
         AltitudeSeekBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
                     @Override
@@ -128,7 +128,7 @@ public class SettingStartupActivity extends AppCompatActivity {
                         }else{
                             //If the Altitude CheckBox isn't checked, the value can't be changed
                             AltitudeSeekBar.setProgress(0);
-                            CurrentAltitude.setText("500");
+                            CurrentAltitude.setText(Integer.toString(500));
                         }
                     }
                     @Override
@@ -143,14 +143,14 @@ public class SettingStartupActivity extends AppCompatActivity {
         final int stepAgl = 2;
         final int maxAgl = 52;
         AngleSeekBar.setMax((maxAgl) / stepAgl);
-        AngleSeekBar.setProgress(52);
-        CurrentAngle.setText(Double.toString(30));
+        AngleSeekBar.setProgress(7);
+        CurrentAngle.setText(Float.toString(7));
         AngleSeekBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        double value = (progress * stepAgl)*30/52;
-                        CurrentAngle.setText(Double.toString(value));
+                        float value = (progress * stepAgl)*30/52;
+                        CurrentAngle.setText(Float.toString(value));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {
@@ -164,15 +164,15 @@ public class SettingStartupActivity extends AppCompatActivity {
         final int stepYaw = 1;
         final int maxYaw = 6;
         final int minYaw = 1;
-        YawSpeedSeekBar.setMax((maxYaw - minYaw) / stepYaw);
-        YawSpeedSeekBar.setProgress(6);
-        CurrentYawSpeed.setText(Integer.toString(6));
+        YawSpeedSeekBar.setMax((maxYaw - (int) minYaw) / stepYaw);
+        YawSpeedSeekBar.setProgress(3);
+        CurrentYawSpeed.setText(Float.toString(3));
         YawSpeedSeekBar.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        int value = minYaw + (progress * stepYaw);
-                        CurrentYawSpeed.setText(Integer.toString(value));
+                        float value = minYaw + (progress * stepYaw);
+                        CurrentYawSpeed.setText(Float.toString(value));
                     }
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {
@@ -186,7 +186,7 @@ public class SettingStartupActivity extends AppCompatActivity {
         final int stepVertical = 100;
         final int maxVertical = 2000;
         final int minVertical  = 200;
-        VerticalSpeedSeekBar.setMax((maxVertical - minVertical) / stepVertical);
+        VerticalSpeedSeekBar.setMax((maxVertical -  minVertical) / stepVertical);
         VerticalSpeedSeekBar.setProgress(2000);
         CurrentVerticalSpeed.setText(Integer.toString(2000));
         VerticalSpeedSeekBar.setOnSeekBarChangeListener(
@@ -215,7 +215,7 @@ public class SettingStartupActivity extends AppCompatActivity {
                 try {
                     //The drone must be stationary on the ground otherwise the CONFIG commands are ignored
                     //This is UDP so we have to send the command multiple times to be sure it's executed.
-                    for(int iBcl = 0; iBcl < 10; iBcl ++){
+                    for(int iBcl = 0; iBcl < 30; iBcl ++){
                         mDrone.SendCMD("AT*PCMD=" + mPilot.RecupSequenceNum(1) + ",1,0,0,0,0");
                         TimeUnit.MILLISECONDS.sleep(50);
                     }
@@ -223,47 +223,48 @@ public class SettingStartupActivity extends AppCompatActivity {
                     //Camera Type
                     switch(String.valueOf(VideoSpinner.getSelectedItem())){
                         case "Vertical":
-                            for(int iBcl = 0; iBcl < 10; iBcl ++){
+                            for(int iBcl = 0; iBcl < 30; iBcl ++){
                                 mDrone.SendCMD(SetDroneCAM(mPilot.RecupSequenceNum(1), 1));
                                 TimeUnit.MILLISECONDS.sleep(30);
                             }
                             break;
                         case "Horizontal":
-                            for(int iBcl = 0; iBcl < 10; iBcl ++){
+                            for(int iBcl = 0; iBcl < 30; iBcl ++){
                                 mDrone.SendCMD(SetDroneCAM(mPilot.RecupSequenceNum(1), 2));
                                 TimeUnit.MILLISECONDS.sleep(30);
                             }
                             break;
                     }
 
-                    //Altitude Max (millimeters)
+                    //Maximum Altitude (millimeters)
                     if(AltitudeMaxOn.isChecked()){
-                        for(int iBcl = 0; iBcl < 10; iBcl ++) {
+                        for(int iBcl = 0; iBcl < 30; iBcl ++) {
                             mDrone.SendCMD(SetDroneALT(mPilot.RecupSequenceNum(1), Integer.valueOf(CurrentAltitude.getText().toString())));
                             TimeUnit.MILLISECONDS.sleep(30);
                         }
                     }else{
-                        for(int iBcl = 0; iBcl < 10; iBcl ++) {
+                        for(int iBcl = 0; iBcl < 30; iBcl ++) {
                             mDrone.SendCMD(SetDroneALT(mPilot.RecupSequenceNum(1), 100000));
                             TimeUnit.MILLISECONDS.sleep(30);
                         }
                     }
 
-                    //Angle Max (radians)
-                    for(int iBcl = 0; iBcl < 10; iBcl ++) {
-                        mDrone.SendCMD(SetDroneMAXANGLE(mPilot.RecupSequenceNum(1), Double.valueOf(CurrentAngle.getText().toString()) * (0.52 / 30)));
+                    //Maximum Angle (pitch & roll) (radians)
+                    for(int iBcl = 0; iBcl < 30; iBcl ++) {
+                        mDrone.SendCMD(SetDroneMAXANGLE(mPilot.RecupSequenceNum(1),Float.valueOf(CurrentAngle.getText().toString()) * (float)(0.52 / 30)));
                         TimeUnit.MILLISECONDS.sleep(30);
                     }
 
-                    //Vertical speed Max (millimeters per second)
-                    for(int iBcl = 0; iBcl < 10; iBcl ++) {
+
+                    //Maximum Vertical speed (millimeters per second)
+                    for(int iBcl = 0; iBcl < 30; iBcl ++) {
                         SetDroneVERTICALSPEED(mPilot.RecupSequenceNum(1), Integer.valueOf(CurrentVerticalSpeed.getText().toString()));
                         TimeUnit.MILLISECONDS.sleep(30);
                     }
 
-                    //Yaw speed Max (radians per second)
-                    for(int iBcl = 0; iBcl < 10; iBcl ++) {
-                        SetDroneYAWSPEED(mPilot.RecupSequenceNum(1), Integer.valueOf(CurrentYawSpeed.getText().toString()));
+                    //Maximum Yaw speed (radians per second)
+                    for(int iBcl = 0; iBcl < 30; iBcl ++) {
+                        SetDroneYAWSPEED(mPilot.RecupSequenceNum(1), Float.valueOf(CurrentYawSpeed.getText().toString()));
                         TimeUnit.MILLISECONDS.sleep(30);
                     }
 
@@ -316,9 +317,12 @@ public class SettingStartupActivity extends AppCompatActivity {
     public String SetDroneALT(int iCount, int iVal){
         //iCount is the command number, iVal is the maximum altitude of the drone in millimeters.
         String sResult;
-        /*There is no need to secure the value of iVal
-          because the pressure sensor allow altitude measurement at any height. */
-        sResult = "AT*CONFIG=" + iCount + ",\"control:altitude_max\",\" " + iVal + " \"";
+        /*The pressure sensor allow altitude measurement at any height. */
+        if(iVal > 0) {
+            sResult = "AT*CONFIG=" + iCount + ",\"control:altitude_max\",\""+iVal+"\"";
+        }else{
+            sResult = "AT*CONFIG=" + iCount + ",\"control:altitude_max\",\"500\"";
+        }
         return sResult;
     }
 
@@ -328,9 +332,9 @@ public class SettingStartupActivity extends AppCompatActivity {
         String sResult;
         //This is a security if iVal isn't 1 or 2, the default camera is the horizontal one.
         if(iVal == 1) {
-            sResult = "AT*CONFIG=" + iCount + ",\"video:video_channel\",\"1\"";
+            sResult = "AT*CONFIG="+iCount+",\"video:video_channel\",\"1\"";
         }else{
-            sResult = "AT*CONFIG=" + iCount + ",\"video:video_channel\",\"2\"";
+            sResult = "AT*CONFIG="+iCount+",\"video:video_channel\",\"2\"";
         }
         return sResult;
     }
@@ -341,35 +345,35 @@ public class SettingStartupActivity extends AppCompatActivity {
         String sResult;
         //This is a security, recommended values goes from 200 to 2000. Others values may cause instability.
         if(iVal >= 200 && iVal <= 2000){
-            sResult = "AT*CONFIG=" + iCount + ",\"control:control_vz_max\",\" " + iVal + " \"";
+            sResult = "AT*CONFIG="+iCount+",\"control:control_vz_max\",\""+iVal+"\"";
         }else{
-            sResult = "AT*CONFIG=" + iCount + ",\"control:control_vz_max\",\" " + 200 + " \"";
+            sResult = "AT*CONFIG="+iCount+",\"control:control_vz_max\",\""+200+"\"";
         }
         return sResult;
     }
 
-    public String SetDroneYAWSPEED(int iCount, int iVal){
+    public String SetDroneYAWSPEED(int iCount, float fVal){
         /*iCount is the command number,
-          iVal is the maximum yaw speed of the drone in radian per second*/
+          fVal is the maximum yaw speed of the drone in radian per second*/
         String sResult;
         //This is a security, recommended values goes from 1 to 6. Others values may cause instability.
-        if(iVal >= 1 && iVal <= 6){
-            sResult = "AT*CONFIG="+iCount+",\"control:control_yaw\",\" "+iVal+" \"";
+        if(fVal >= 1 && fVal <= 6){
+            sResult = "AT*CONFIG="+iCount+",\"control:control_yaw\",\""+fVal+"\"";
         }else{
-            sResult = "AT*CONFIG=" + iCount + ",\"control:control_yaw\",\"1\"";
+            sResult = "AT*CONFIG="+iCount+",\"control:control_yaw\",\"1\"";
         }
         return sResult;
     }
 
-    public String SetDroneMAXANGLE(int iCount, double dVal){
+    public String SetDroneMAXANGLE(int iCount, float fVal){
         /*iCount is the command number,
-          iVal is the maximum pitch and roll angle of the drone in radian*/
+          fVal is the maximum pitch and roll angle of the drone in radian*/
         String sResult;
         //This is a security, max is 0.52 . Higher values are not reliable and might not allow the drone to stay at the same altitude.
-        if(dVal <= 0.52){
-            sResult = "AT*CONFIG="+iCount+",\"control:euler_angle_max \",\" " +dVal+" \"";
+        if(fVal <= 0.52 && fVal >= 0.0){
+            sResult = "AT*CONFIG="+iCount+",\"control:euler_angle_max\",\""+fVal+"\"";
         }else{
-            sResult = "AT*CONFIG=" + iCount + ",\"control:euler_angle_max \",\"0.50\"";
+            sResult = "AT*CONFIG="+iCount+",\"control:euler_angle_max\",\"0.50\"";
         }
         return sResult;
     }
