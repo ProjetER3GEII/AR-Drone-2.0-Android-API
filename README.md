@@ -12,7 +12,7 @@ The API will provide five main services:
 *	Setting up the drone before take-off (such as setting the maximum altitude, video frame rate…).
 *	Receiving and interpreting the navigation data coming from the drone in order to display useful information such as altitude and speed of the aircraft.
 *	Receiving the video streamed by the drone in order to display it in real time. It will also be possible to record the video stream.
-*	
+
 Thus this interface will allow the user to set up and pilot the drone. It will also allow him to display and record the camera stream, which can be used for further processing.
 
 ## What's included
@@ -20,8 +20,8 @@ You will find in this repository all the Java classes, as well as an Android pro
 
 ## Authors
 
-*Jules Simon 
-*Alexis Artigues
-*Mathieu Collomb
-*Antoine Crosetti
-*Jean-Christophe Chudziak
+* Jules Simon @JulesSimonGEII
+* Alexis Artigues
+* Mathieu Collomb
+* Antoine Crosetti
+* Jean-Christophe Chudziak
