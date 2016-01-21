@@ -32,7 +32,7 @@ Thus this interface will allow the user to set up and pilot the drone. It will a
 You will find in this repository all the Java classes, as well as an Android project that can be used as an example.
 
 ## Authors
-We are [Electrical Engineering and Industrial Programming Students] (https://www.iut-acy.univ-smb.fr/) at the [University of Savoie Mont-Blanc] (https://www.univ-smb.fr/) 
+We are [Electrical Engineering and Industrial Programming Students] (https://www.iut-acy.univ-smb.fr/) at the [University of Savoie Mont-Blanc] (https://www.univ-smb.fr/).
 * [Jules Simon] (https://github.com/JulesSimonGEII)
 * Alexis Artigues
 * Mathieu Collomb
