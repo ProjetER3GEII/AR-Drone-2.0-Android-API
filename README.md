@@ -20,8 +20,9 @@ You will find in this repository all the Java classes, as well as an Android pro
 
 ## Authors
 
-* Jules Simon @JulesSimonGEII
+* Jules Simon : JulesSimonGEII on Github
 * Alexis Artigues
 * Mathieu Collomb
 * Antoine Crosetti
 * Jean-Christophe Chudziak
+
