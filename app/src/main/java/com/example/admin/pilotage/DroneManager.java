@@ -1,5 +1,7 @@
 package com.example.admin.pilotage;
 
+import android.widget.Toast;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
@@ -7,6 +9,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -58,6 +61,8 @@ public class DroneManager {
     public byte[] ctrl_start = {0x01, 0x00, 0x00, 0x00};
     public DatagramPacket ctrl_packet;
 
+    String TAG = "Drone";
+
 
     // Thread exécuté une seule fois pour init.
     boolean bInit = false;
@@ -65,7 +70,6 @@ public class DroneManager {
     public DroneManager() {
 
         // Creating a socket and the packets. It is only done once.
-
         buffer_cmd = new byte[512];
 
         // CREATING THE SOCKET
@@ -81,7 +85,6 @@ public class DroneManager {
         try {
             adress = InetAddress.getByName(host);
         } catch (UnknownHostException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
@@ -91,29 +94,14 @@ public class DroneManager {
             at_buff = CommandeAT.getBytes("ASCII"); // To recieve navdata
 
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-
         }
-
-        // COMMAND
-        udp_packet_cmd = new DatagramPacket(buffer_cmd, buffer_cmd.length, adress, cmd_port);
-
-        // NAVDATA
-        nav_packet = new DatagramPacket(nav_buff_start, nav_buff_start.length, adress, nav_socket);
-        at_packet = new DatagramPacket(at_buff, at_buff.length, adress, cmd_port);
-
-        // VIDEO
-        video_packet = new DatagramPacket(at_Video, at_Video.length, adress, video_port);
-
-        // CONTROL
-        ctrl_packet = new DatagramPacket(ctrl_start, ctrl_start.length,adress,5559);
-
+        // Initialising each packet
+        this.SetPackets();
+        // Initialisation flag
         bInit = false;
 
-        DemarreThread();
-
-
+        this.StartThread();
     }
 
     /**
@@ -131,11 +119,8 @@ public class DroneManager {
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-
         }
-
         udp_packet_cmd.setData(buffer_cmd); // Loading the command into the buffer
-
     }
 
     /**
@@ -150,33 +135,7 @@ public class DroneManager {
                 if (bInit == false) {
 
                     // These commands are performed only once to initialize the communication.
-                    try {
-                        // We send a random command to the Navdata socket (5554) (here the command is 1,0,0,0) to start the communication on this socket.
-                        udp_socket.send(nav_packet);
-                        TimeUnit.MILLISECONDS.sleep(30);
-                        // We send the command used to start continuous navdata emission.
-                        udp_socket.send(at_packet);
-                        TimeUnit.MILLISECONDS.sleep(30);
-                        // We send a random command on the video stream socket (here the command is 1,0,0,0) to start the video stream on this socket.
-                        udp_socket.send(video_packet);
-                        TimeUnit.MILLISECONDS.sleep(30);
-                        // We send a random command on the control socket (here the command is 1,0,0,0) to start the control socket communication.
-                        udp_socket.send(ctrl_packet);
-
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    // NAVDATA
-                    nav_packet.setData(nav_buff);
-                    nav_packet.setLength(nav_buff.length);
-                    // CONTROL
-                    ctrl_packet.setData(ctrl_buff);
-                    ctrl_packet.setLength(ctrl_buff.length);
+                   InitConnexions();
 
                     bInit = true;
                 } else {
@@ -192,7 +151,7 @@ public class DroneManager {
                 }
             }while(true);
         }
-    }
+    };
 
     /**
      * Retrieves Navdata from socket 5554
@@ -208,12 +167,62 @@ public class DroneManager {
      * Starts the networking thread used to send the commands and receive navdata.
      * @see DroneManager#SendCMD(String)
      */
-    public void DemarreThread(){
+    public void StartThread(){
 
         tCom_UDP = new Thread(new TComUDP());
         tCom_UDP.start();
     }
 
 
+    /**
+     * Sensds all the necessary packets to configure the drone's sockets
+     */
+    private void InitConnexions() {
+
+        try {
+            // We send a random command to the Navdata socket (5554) (here the command is 1,0,0,0) to start the communication on this socket.
+            udp_socket.send(nav_packet);
+            TimeUnit.MILLISECONDS.sleep(30);
+            // We send the command used to start continuous navdata emission.
+            udp_socket.send(at_packet);
+            TimeUnit.MILLISECONDS.sleep(30);
+            // We send a random command on the video stream socket (here the command is 1,0,0,0) to start the video stream on this socket.
+            udp_socket.send(video_packet);
+            TimeUnit.MILLISECONDS.sleep(30);
+            // We send a random command on the control socket (here the command is 1,0,0,0) to start the control socket communication.
+            udp_socket.send(ctrl_packet);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // We set up the NavData buffer. It will be used to receive the sensors data
+        nav_packet.setData(nav_buff);
+        nav_packet.setLength(nav_buff.length);
+        // We set up the control socket buffer
+        ctrl_packet.setData(ctrl_buff);
+        ctrl_packet.setLength(ctrl_buff.length);
+    }
+
+    /**
+     * Sets up each packet by giving them the proper sockets, buffers and IP adresses
+     */
+    private void SetPackets(){
+        // COMMAND
+        udp_packet_cmd = new DatagramPacket(buffer_cmd, buffer_cmd.length, adress, cmd_port);
+
+        // NAVDATA
+        nav_packet = new DatagramPacket(nav_buff_start, nav_buff_start.length, adress, nav_socket);
+        at_packet = new DatagramPacket(at_buff, at_buff.length, adress, cmd_port);
+
+        // VIDEO
+        video_packet = new DatagramPacket(at_Video, at_Video.length, adress, video_port);
+
+        // CONTROL
+        ctrl_packet = new DatagramPacket(ctrl_start, ctrl_start.length,adress,5559);
+    }
 }
 
