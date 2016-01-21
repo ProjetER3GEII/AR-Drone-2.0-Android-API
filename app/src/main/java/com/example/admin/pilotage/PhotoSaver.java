@@ -3,7 +3,6 @@ package com.example.admin.pilotage;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.DataInputStream;
@@ -62,12 +61,6 @@ public class PhotoSaver {
     int len;
     byte Buffer[] = new byte[8192];
 
-    /**
-     * This url is set to the adress of the live video feed.
-     * @see PhotoSaver#path
-     */
-    URL url;
-    URLConnection urlConnection;
     Socket feed_socket;
     Thread tRecordFeed;
 
@@ -88,13 +81,6 @@ public class PhotoSaver {
         rightNow = Calendar.getInstance();
         filename = rightNow.get(Calendar.DAY_OF_MONTH) + "_" + (rightNow.get(Calendar.MONTH) + 1) + "_" + rightNow.get(Calendar.YEAR) + ".jpeg";
 
-        // Seting up the connection in order to SavePicture the live video feed.
-        try {
-            url = new URL(path);
-            urlConnection = url.openConnection();
-        } catch (IOException e) {
-
-        }
         // Used to SavePicture and process the live feed.
         mProcessor = new Processing();
         mRecordFeed = new RecordFeed();
@@ -181,60 +167,50 @@ public class PhotoSaver {
             // Value of the header list's last index
             int LastIndex_Totaux = 0;
 
-            Integer tmp = 0;
-            Integer Tmp2 = 0;
+            Integer header_index = 0;
+            Integer current_header = 0;
 
             ArrayList<Integer> ListeHeader_Tampon = new ArrayList<>();
             ArrayList<Integer> ListeHeader_Totaux = new ArrayList<>();
 
-            // Boucle de lecture des headers
+            // Looking for all the headers indexes
             while((length=in.read(Tampon_Liste)) != -1){
 
                 ListeHeader_Tampon = mProcessor.indexOf_bufferedData(Tampon_Liste, Pattern, bytes_lus);
                 for (i = 0; i < ListeHeader_Tampon.size(); i++) {
-                    tmp = (ListeHeader_Tampon.get(i));
-                    ListeHeader_Totaux.add(tmp);
+                    header_index = (ListeHeader_Tampon.get(i));
+                    ListeHeader_Totaux.add(header_index);
                 }
-
                 bytes_lus = length + bytes_lus;
             }
 
             LastIndex_Totaux = ListeHeader_Totaux.size()-1;
-            // Fermeture du fichier
             in.close();
-
             bytes_lus = 0;
             in = new FileInputStream(Environment.getExternalStorageDirectory() + "/Pictures/" + "video.mp4");
             i = 0;
 
-            // Recherche des headers et recopiage du fichier
+            // Search of the headers using the index list and copying of the file
             while((length=in.read(Tampon_Sup)) != -1){
 
-                Tmp2 = ListeHeader_Totaux.get(i);
+                current_header = ListeHeader_Totaux.get(i);
 
-                if((bytes_lus.equals(Tmp2))&& (i<LastIndex_Totaux)){
-                    Log.v("Header trouve:", "-----------" + ListeHeader_Totaux.get(i));
+                // If a header is found, the next 63 bytes aren't copied and we start looking for the next header
+                if((bytes_lus.equals(current_header))&& (i<LastIndex_Totaux)){
                     bytes_skipped = in.skip(63);
                     i++;
-                    Log.v("PhotoSaver", "Bytes skipped : " + bytes_skipped);
                     bytes_lus = bytes_lus + (int)bytes_skipped;
                 }
                 else {
                     out.write(Tampon_Sup, 0, length);
                 }
-
                 bytes_lus = length + bytes_lus;
-
             }
-
             out.close();
             in.close();
 
-            Log.v("PhotoSaver", "Copie terminee");
         }catch(FileNotFoundException fn){
-            Log.v("PhotoSaver", "Copie : file not found");
         }catch (IOException io){
-            Log.v("PhotoSaver", "Copie : io exception");
         }
 
     }
@@ -251,16 +227,10 @@ public class PhotoSaver {
                 bStop = false;
                 // Connection au drone
                 feed_socket = new Socket("192.168.1.1",5555);
-                Log.v("PhotoSaver", "Socket cree");
-
-                if(feed_socket.isConnected()){
-                    Log.v("PhotoSaver", "Socket connecte");
-                }
                 // Lecture du flux
                 in = new DataInputStream(feed_socket.getInputStream());
                 // Ecriture du flux
                 VideoFile = new FileOutputStream(Environment.getExternalStorageDirectory() + "/Pictures/" + "video.mp4");
-                Log.v("PhotoSaver", "Démarrrage enregistrement");
 
                 while((bStop == false)){
                     len = in.read(Buffer);
@@ -268,10 +238,8 @@ public class PhotoSaver {
                 }
 
                 VideoFile.close();
-                Log.v("PhotoSaver", "Fin enregistrement");
-                VideoFile.close();
             }catch (IOException io){
-                Log.v("PhotoSaver", "IO exeption enregistrement");
+
             }
         }
 
